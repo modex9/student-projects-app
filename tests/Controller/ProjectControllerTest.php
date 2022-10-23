@@ -11,7 +11,7 @@ class ProjectControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
     private ProjectRepository $repository;
-    private string $path = '/project/';
+    private string $path = '/';
 
     protected function setUp(): void
     {
@@ -31,7 +31,7 @@ class ProjectControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Project index');
-
+        $this->assertSelectorTextContains('a', 'Create new');
         // Use the $crawler to perform additional assertions e.g.
         // self::assertSame('Some text on the page', $crawler->filter('.p')->first());
     }
@@ -40,73 +40,72 @@ class ProjectControllerTest extends WebTestCase
     {
         $originalNumObjectsInRepository = count($this->repository->findAll());
 
-        $this->markTestIncomplete();
         $this->client->request('GET', sprintf('%snew', $this->path));
 
         self::assertResponseStatusCodeSame(200);
 
         $this->client->submitForm('Save', [
             'project[name]' => 'Testing',
-            'project[max_students_per_group]' => 'Testing',
+            'project[max_students_per_group]' => 5,
         ]);
 
-        self::assertResponseRedirects('/project/');
+        self::assertResponseRedirects('/');
 
         self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
     }
 
     public function testShow(): void
     {
-        $this->markTestIncomplete();
         $fixture = new Project();
         $fixture->setName('My Title');
-        $fixture->setMax_students_per_group('My Title');
+        $fixture->setMaxStudentsPerGroup(2);
 
-        $this->repository->add($fixture, true);
+        $entityManager = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $entityManager->persist($fixture);
+        $entityManager->flush();
 
         $this->client->request('GET', sprintf('%s%s', $this->path, $fixture->getId()));
 
         self::assertResponseStatusCodeSame(200);
         self::assertPageTitleContains('Project');
-
         // Use assertions to check that the properties are properly displayed.
     }
 
     public function testEdit(): void
     {
-        $this->markTestIncomplete();
         $fixture = new Project();
         $fixture->setName('My Title');
-        $fixture->setMax_students_per_group('My Title');
+        $fixture->setMaxStudentsPerGroup(2);
 
-        $this->repository->add($fixture, true);
+        $entityManager = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $entityManager->persist($fixture);
+        $entityManager->flush();
 
         $this->client->request('GET', sprintf('%s%s/edit', $this->path, $fixture->getId()));
 
         $this->client->submitForm('Update', [
             'project[name]' => 'Something New',
-            'project[max_students_per_group]' => 'Something New',
+            'project[max_students_per_group]' => 3,
         ]);
 
-        self::assertResponseRedirects('/project/');
+        self::assertResponseRedirects('/');
 
         $fixture = $this->repository->findAll();
 
         self::assertSame('Something New', $fixture[0]->getName());
-        self::assertSame('Something New', $fixture[0]->getMax_students_per_group());
+        self::assertSame(3, $fixture[0]->getMaxStudentsPerGroup());
     }
 
     public function testRemove(): void
     {
-        $this->markTestIncomplete();
-
         $originalNumObjectsInRepository = count($this->repository->findAll());
 
         $fixture = new Project();
         $fixture->setName('My Title');
-        $fixture->setMax_students_per_group('My Title');
-
-        $this->repository->add($fixture, true);
+        $fixture->setMaxStudentsPerGroup(2);
+        $entityManager = static::$kernel->getContainer()->get('doctrine.orm.entity_manager');
+        $entityManager->persist($fixture);
+        $entityManager->flush();
 
         self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
 
@@ -114,6 +113,6 @@ class ProjectControllerTest extends WebTestCase
         $this->client->submitForm('Delete');
 
         self::assertSame($originalNumObjectsInRepository, count($this->repository->findAll()));
-        self::assertResponseRedirects('/project/');
+        self::assertResponseRedirects('/');
     }
 }

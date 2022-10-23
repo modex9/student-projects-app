@@ -9,8 +9,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\InitProjectGroupsService;
 
-#[Route('/project')]
+
 class ProjectController extends AbstractController
 {
     #[Route('/', name: 'app_project_index', methods: ['GET'])]
@@ -22,7 +23,7 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/new', name: 'app_project_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectRepository $projectRepository): Response
+    public function new(Request $request, ProjectRepository $projectRepository, InitProjectGroupsService $initProjectGroupsService): Response
     {
         $project = new Project();
         $form = $this->createForm(ProjectType::class, $project);
@@ -30,7 +31,8 @@ class ProjectController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $projectRepository->save($project, true);
-
+            $numGroups = $form->get("num_groups")->getData();
+            $initProjectGroupsService->initProjectGroups($project, $numGroups);
             return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
         }
 

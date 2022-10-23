@@ -6,6 +6,7 @@ use App\Entity\Project;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class ProjectType extends AbstractType
 {
@@ -13,6 +14,9 @@ class ProjectType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('num_groups', NumberType::class, [
+                'mapped' => false,
+            ])
             ->add('max_students_per_group')
         ;
     }

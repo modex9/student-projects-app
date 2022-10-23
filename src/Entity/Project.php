@@ -24,6 +24,8 @@ class Project
     #[ORM\Column]
     private ?int $max_students_per_group = null;
 
+    private ?int $num_groups = null;
+
     public function __construct()
     {
         $this->studentGroups = new ArrayCollection();
@@ -84,6 +86,26 @@ class Project
     public function setMaxStudentsPerGroup(int $max_students_per_group): self
     {
         $this->max_students_per_group = $max_students_per_group;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of num_groups
+     */ 
+    public function getNumGroups()
+    {
+        return $this->num_groups;
+    }
+
+    /**
+     * Set the value of num_groups
+     *
+     * @return  self
+     */ 
+    public function setNumGroups($num_groups)
+    {
+        $this->num_groups = $num_groups;
 
         return $this;
     }
