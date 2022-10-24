@@ -42,16 +42,8 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_project_show', methods: ['GET'])]
-    public function show(Project $project): Response
-    {
-        return $this->render('project/show.html.twig', [
-            'project' => $project,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_project_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    #[Route('/{id}/status', name: 'app_project_status', methods: ['GET', 'POST'])]
+    public function status(Request $request, Project $project, ProjectRepository $projectRepository): Response
     {
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
@@ -62,7 +54,7 @@ class ProjectController extends AbstractController
             return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('project/edit.html.twig', [
+        return $this->renderForm('project/status.html.twig', [
             'project' => $project,
             'form' => $form,
         ]);

@@ -14,9 +14,7 @@ class ProjectType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('num_groups', NumberType::class, [
-                'mapped' => false,
-            ])
+            ->add('num_groups')
             ->add('max_students_per_group')
         ;
     }

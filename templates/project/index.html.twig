@@ -10,7 +10,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
-                <th>Max_students_per_group</th>
+                <th>Max students per group</th>
                 <th>actions</th>
             </tr>
         </thead>
@@ -21,8 +21,7 @@
                 <td>{{ project.name }}</td>
                 <td>{{ project.maxStudentsPerGroup }}</td>
                 <td>
-                    <a href="{{ path('app_project_show', {'id': project.id}) }}">show</a>
-                    <a href="{{ path('app_project_edit', {'id': project.id}) }}">edit</a>
+                    <a href="{{ path('app_project_status', {'id': project.id}) }}">edit</a>
                 </td>
             </tr>
         {% else %}

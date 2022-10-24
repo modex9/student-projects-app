@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
@@ -22,13 +23,20 @@ class Project
     private Collection $studentGroups;
 
     #[ORM\Column]
+    #[GreaterThan(0)]
     private ?int $max_students_per_group = null;
 
+    #[ORM\Column]
+    #[GreaterThan(0)]
     private ?int $num_groups = null;
+
+    #[ORM\OneToMany(mappedBy: 'project', targetEntity: Student::class, orphanRemoval: true)]
+    private Collection $students;
 
     public function __construct()
     {
         $this->studentGroups = new ArrayCollection();
+        $this->students = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -106,6 +114,36 @@ class Project
     public function setNumGroups($num_groups)
     {
         $this->num_groups = $num_groups;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Student>
+     */
+    public function getStudents(): Collection
+    {
+        return $this->students;
+    }
+
+    public function addStudent(Student $student): self
+    {
+        if (!$this->students->contains($student)) {
+            $this->students->add($student);
+            $student->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStudent(Student $student): self
+    {
+        if ($this->students->removeElement($student)) {
+            // set the owning side to null (unless already changed)
+            if ($student->getProject() === $this) {
+                $student->setProject(null);
+            }
+        }
 
         return $this;
     }

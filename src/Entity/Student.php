@@ -19,6 +19,10 @@ class Student
     #[ORM\ManyToOne(inversedBy: 'students')]
     private ?StudentGroup $studentGroup = null;
 
+    #[ORM\ManyToOne(inversedBy: 'students')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Project $project = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Student
     public function setStudentGroup(?StudentGroup $studentGroup): self
     {
         $this->studentGroup = $studentGroup;
+
+        return $this;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
 
         return $this;
     }
