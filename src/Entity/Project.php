@@ -26,7 +26,6 @@ class Project
     #[GreaterThan(0)]
     private ?int $max_students_per_group = null;
 
-    #[ORM\Column]
     #[GreaterThan(0)]
     private ?int $num_groups = null;
 
@@ -146,5 +145,20 @@ class Project
         }
 
         return $this;
+    }
+
+    public function getGroupPositions(): ?array
+    {
+        if(!empty($this->studentGroups))
+        {
+            $groupPositions = [];
+            $pos = 1;
+            foreach($this->studentGroups->toArray() as $group)
+            {
+                $groupPositions[$group->getId()] = $pos++;
+            }
+            return $groupPositions;
+        }
+        return null;
     }
 }

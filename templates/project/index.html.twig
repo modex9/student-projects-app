@@ -10,6 +10,7 @@
             <tr>
                 <th>Id</th>
                 <th>Name</th>
+                <th>Groups</th>
                 <th>Max students per group</th>
                 <th>actions</th>
             </tr>
@@ -19,6 +20,7 @@
             <tr>
                 <td>{{ project.id }}</td>
                 <td>{{ project.name }}</td>
+                <td>{{ project.studentGroups|length }}</td>
                 <td>{{ project.maxStudentsPerGroup }}</td>
                 <td>
                     <a href="{{ path('app_project_status', {'id': project.id}) }}">edit</a>

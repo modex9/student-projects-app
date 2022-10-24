@@ -4,8 +4,10 @@ namespace App\Entity;
 
 use App\Repository\StudentRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StudentRepository::class)]
+#[Assert\UniqueEntity('fullname')]
 class Student
 {
     #[ORM\Id]
@@ -13,7 +15,7 @@ class Student
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $fullname = null;
 
     #[ORM\ManyToOne(inversedBy: 'students')]

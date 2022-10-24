@@ -43,21 +43,10 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/status', name: 'app_project_status', methods: ['GET', 'POST'])]
-    public function status(Request $request, Project $project, ProjectRepository $projectRepository): Response
+    public function status(Request $request, Project $project): Response
     {
-        $form = $this->createForm(ProjectType::class, $project);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $projectRepository->save($project, true);
-
-            return $this->redirectToRoute('app_project_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('project/status.html.twig', [
-            'project' => $project,
-            'form' => $form,
-        ]);
+        $groupPositions = $project->getGroupPositions();
+        return $this->render('project/status.html.twig', ['project' => $project, 'groupPositions' => $groupPositions]);
     }
 
     #[Route('/{id}', name: 'app_project_delete', methods: ['POST'])]

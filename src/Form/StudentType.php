@@ -2,29 +2,24 @@
 
 namespace App\Form;
 
-use App\Entity\Project;
+use App\Entity\Student;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
-class ProjectType extends AbstractType
+class StudentType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
-            ->add('num_groups', NumberType::class, [
-                'mapped' => false,
-            ])
-            ->add('max_students_per_group')
+            ->add('fullname')
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Project::class,
+            'data_class' => Student::class,
         ]);
     }
 }

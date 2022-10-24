@@ -8,13 +8,43 @@
     <div id="project-content">
         <div class="d-grid gap-1">
             <div class="ms-3 p-1">Project: <b>{{ project.name }}</b></div>
-            <div class="ms-3 p-1">Number of groups: <b>{{ project.numGroups }}</b></div>
-            <div class="ms-3 p-1">Number of groups: <b>{{ project.maxStudentsPerGroup }}</b></div>
+            <div class="ms-3 p-1">Number of groups: <b>{{ project.studentGroups|length }}</b></div>
+            <div class="ms-3 p-1">Students per group: <b>{{ project.maxStudentsPerGroup }}</b></div>
         </div>
-{{ project.name }}
+        <h3>Students</h3>
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <td>Student</td>
+                    <td>Group</td>
+                    <td>Actions</td>
+                <tr>
+                <tbody>
+                {% if project.students is not empty %}
+                    {% for student in project.students %}
+                        <tr>
+                            <td>{{student.fullname}}</td>
+                            <td>
+                            {% if groupPositions is not empty and student.studentGroup %}
+                                {{groupPositions[student.studentGroup.id]}}
+                            {% else %}
+                                -
+                            {% endif %}
+                            </td>
+                            <td>{{ include('student/_delete_form.html.twig', {'student': student, 'project_id': project.id} ) }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan=3>No students.</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </thead>
+        </table>
+        <a id='add-student-to-project' href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
     </div>
 
     <a href="{{ path('app_project_index') }}">back to list</a>
 
-    {{ include('project/_delete_form.html.twig') }}
 {% endblock %}
