@@ -7,7 +7,7 @@
         {{ error }}
     {% endfor %}
     <div id="project-content">
-        <div class="w-50 container-fluid">
+        <div class="w-50 container-fluid students-container">
             <div class="text-center">
                 <h3>Project status page</h3>
                 <div class="d-grid gap-1">
@@ -49,9 +49,11 @@
             </table>
             <a id='add-student-to-project' class="btn btn-primary my-3" href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
         </div>
-        <div class="w-50 container-fluid">
+        <div class="w-50 container-fluid groups-container">
             <h3>Groups</h3>
             <div class="alert alert-danger d-none" role="alert">
+            </div>
+            <div class="alert alert-success d-none" role="alert">
             </div>
             <div class="row">
 
@@ -103,6 +105,27 @@
             </div>
             <a class='btn btn-dark mt-3' href="{{ path('app_project_index') }}">back to list</a>
         </div>
-
     </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        const refreshInterval = 10000; // ms
+
+        setInterval(refreshProjectStatus, refreshInterval);
+    
+        function refreshProjectStatus()
+        {
+            fetch(window.location.href, {
+                method: 'GET',
+            }).then(response => response.text())
+            .then(function (html) {
+    
+                const newContentStudents = $(html).find('.students-container').html();
+                const newContentGroups = $(html).find('.groups-container').html();
+                $('.students-container').html(newContentStudents);
+                $('.groups-container').html(newContentGroups);
+            });
+        }
+    </script>
 {% endblock %}

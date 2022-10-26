@@ -16,9 +16,11 @@ const $ = require('jquery');
 Window.prototype.$ = $;
 
 $(function () {
-    $('select').on('change', function() {
+    $('#project-content').on('change', 'select', function() {
         $(".alert-danger").text('');
+        $(".alert-success").text('');
         $(".alert-danger").addClass('d-none');
+        $(".alert-success").addClass('d-none');
         const studentId = $(this).val();
         const groupId = $(this).closest('table').data('group-id');
         fetch(`/student/${studentId}/assign/${groupId}`, {
@@ -28,12 +30,18 @@ $(function () {
                 'Content-Type': 'application/json'
             },
         }).then(response => response.json())
-          .then(function (json) {
+        .then(function (json) {
                 if(json.error)
                 {
                     $(".alert-danger").text(json.error);
                     $(".alert-danger").removeClass('d-none');
                 }
-          });
+                else if(json.success)
+                {
+                    $(".alert-success").text(json.success);
+                    $(".alert-success").removeClass('d-none');
+                }
+        });
+
     });
 });

@@ -66,10 +66,9 @@ class StudentController extends AbstractController
         $student->setStudentGroup($studentGroup);
         $studentRepository->save($student, true);
         $response->setData([
-            'success' => true
+            'success' => 'Success. Student was assigned to a group.'
         ]);
         return $response;
-        // return $this->redirectToRoute('app_project_status', ['id' => $student->getProject()->getId()], Response::HTTP_SEE_OTHER);
     }
 
 }
