@@ -109,6 +109,66 @@ class StudentControllerTest extends WebTestCase
         self::assertResponseRedirects(sprintf('/%s/status', $this->project->getId()));
     }
 
+    public function testAssignment()
+    {
+        // CASE 1: Error. Can't assign a group, becausee student already has one.
+        $fixture = new Student();
+        $fixture->setFullname('My Title');
+        $fixture->setStudentGroup($this->group);
+        $fixture->setProject($this->project);
+        $this->repository->save($fixture, true);
+
+        $this->client->request('POST', sprintf('%s%s/assign/%s', $this->path, $fixture->getId(), $this->group->getId()));
+        $response = $this->client->getResponse();
+        self::assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        self::assertJson($response->getContent());
+
+        $responseArray = json_decode($response->getContent(), true);
+        self::assertTrue(isset($responseArray['error']));
+
+        // END CASE 1.
+
+        // CASE 2: Success. Assigning to correct project and student has no group.
+        $fixture->setStudentGroup(null);
+        $this->repository->save($fixture, true);
+
+        $this->client->request('POST', sprintf('%s%s/assign/%s', $this->path, $fixture->getId(), $this->group->getId()));
+        $response = $this->client->getResponse();
+        self::assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        self::assertJson($response->getContent());
+
+        $responseArray = json_decode($response->getContent(), true);
+        self::assertTrue(isset($responseArray['success']));
+
+        // END CASE 2.
+
+        // CASE 3: Error. Assigning to a group, which has a different Project.
+        
+        // Can't get this to work.
+        
+        // $fixture = $this->repository->findOneBy(['id' => $fixture->getId()]);
+        // $fixture->setStudentGroup(null);
+        // $this->repository->save($fixture, true);
+
+        // $evilProject = new Project();
+        // $evilProject
+        //     ->setName('My Title')
+        //     ->setMaxStudentsPerGroup(1)
+        //     ->setNumGroups(2);
+        // $this->projectRepository->save($evilProject, true);
+        // $impostorGroup = $this->studentGroupRepository->findOneBy(['project' => $evilProject]);
+
+        // $this->client->request('POST', sprintf('%s%s/assign/%s', $this->path, $fixture->getId(), $impostorGroup->getId()));
+        // $response = $this->client->getResponse();
+        // self::assertTrue($response->headers->contains('Content-Type', 'application/json'));
+        // self::assertJson($response->getContent());
+
+        // $responseArray = json_decode($response->getContent(), true);
+        // self::assertTrue(isset($responseArray['error']));
+
+        // END CASE 3.
+    }
+
     public function testCleanUp()
     {
         foreach ($this->repository->findAll() as $object) {
@@ -121,6 +181,5 @@ class StudentControllerTest extends WebTestCase
             $this->projectRepository->remove($object, true);
         }
         self::assertSame(1,1);
-
     }
 }

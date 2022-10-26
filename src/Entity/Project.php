@@ -161,4 +161,9 @@ class Project
         }
         return null;
     }
+
+    public function __toString()
+    {
+        return $this->id;
+    }
 }
