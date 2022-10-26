@@ -75,6 +75,18 @@ class StudentControllerTest extends WebTestCase
         $this->repository->save($fixture, true);
     
         $this->project->addStudent($fixture);
+        $this->group->addStudent($fixture);
+
+        // Check that project has 1 student before deletion.
+        self::assertSame(1, count($this->project->getStudents()));
+        // Check that group has 1 student before deletion.
+        self::assertSame(1, count($this->group->getStudents()));
+
+        // Reload project and group before deletion to test if EM is filling the objects properly.
+        $this->project = $this->projectRepository->findOneBy(['id' => $this->project->getId()]);
+        $this->group = $this->studentGroupRepository->findOneBy(['id' => $this->group->getId()]);
+        self::assertSame(1, count($this->project->getStudents()));
+        self::assertSame(1, count($this->group->getStudents()));
 
         self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
 
@@ -82,6 +94,16 @@ class StudentControllerTest extends WebTestCase
         // $response = $this->client->getResponse();
         // file_put_contents('response.html', $response); 
         $this->client->submitForm('Delete');
+
+        // Reload project and group after deletion.
+        $this->project = $this->projectRepository->findOneBy(['id' => $this->project->getId()]);
+        $this->group = $this->studentGroupRepository->findOneBy(['id' => $this->group->getId()]);
+
+        // Check that project has 0 students after student deletion.
+        self::assertSame(0, count($this->project->getStudents()));
+
+        // Check that group has 1 student after student deletion.
+        self::assertSame(0, count($this->group->getStudents()));
 
         self::assertSame($originalNumObjectsInRepository, count($this->repository->findAll()));
         self::assertResponseRedirects(sprintf('/%s/status', $this->project->getId()));
