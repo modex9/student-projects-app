@@ -46,7 +46,7 @@
                     </tbody>
                 </thead>
             </table>
-            <a id='add-student-to-project' href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
+            <a id='add-student-to-project' class="btn btn-primary my-3" href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
         </div>
         <div class="w-50 container-fluid">
             <h3>Groups</h3>
@@ -91,11 +91,8 @@
             {% set groupsCounter = groupsCounter + 1 %}
             {% endfor %}
             </div>
-
+            <a class='btn btn-dark mt-3' href="{{ path('app_project_index') }}">back to list</a>
         </div>
 
     </div>
-
-    <a href="{{ path('app_project_index') }}">back to list</a>
-
 {% endblock %}

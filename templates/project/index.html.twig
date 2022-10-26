@@ -3,36 +3,38 @@
 {% block title %}Project index{% endblock %}
 
 {% block body %}
-    <h1>Project index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Groups</th>
-                <th>Max students per group</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for project in projects %}
-            <tr>
-                <td>{{ project.id }}</td>
-                <td>{{ project.name }}</td>
-                <td>{{ project.studentGroups|length }}</td>
-                <td>{{ project.maxStudentsPerGroup }}</td>
-                <td>
-                    <a href="{{ path('app_project_status', {'id': project.id}) }}">Status</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="w-50 container-fluid">
+        <h3 class='text-center'>Project index</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Groups</th>
+                    <th>Max students per group</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for project in projects %}
+                <tr>
+                    <td>{{ project.id }}</td>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.studentGroups|length }}</td>
+                    <td>{{ project.maxStudentsPerGroup }}</td>
+                    <td>
+                        <a href="{{ path('app_project_status', {'id': project.id}) }}">Status</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_project_new') }}">Create new</a>
+        <a class="btn btn-primary" href="{{ path('app_project_new') }}">Create new</a>
+    </div>
 {% endblock %}
