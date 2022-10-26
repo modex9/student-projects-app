@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/student')]
 class StudentController extends AbstractController
@@ -45,19 +46,30 @@ class StudentController extends AbstractController
         return $this->redirectToRoute('app_project_status', ['id' => $project->getId()], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/assign/{group}', name: 'app_student_assign', methods: ['POST', 'GET'])]
+    #[Route('/{id}/assign/{studentGroup}', name: 'app_student_assign', methods: ['POST'])]
     public function assignToProject(Request $request, Student $student, StudentGroup $studentGroup, StudentRepository $studentRepository): Response
     {
+        $response = new JsonResponse();
         if($student->getProject()->getId() != $studentGroup->getProject()->getId())
         {
-            $this->addFlash('error', 'Trying to assign student to a group of a project, to which student is not assigned.');
+            $response->setData(['error' => 'Trying to assign student to a group of a project, to which student does not belong.']);
+            $response->setStatusCode(JsonResponse::HTTP_NOT_ACCEPTABLE);
+            return $response;
         }
-        else
+        if($student->getStudentGroup() != null)
         {
-            $student->setStudentGroup($studentGroup);
-            $studentRepository->save($student, true);
+            $response->setData(['error' => 'This student already has a group.']);
+            $response->setStatusCode(JsonResponse::HTTP_NOT_ACCEPTABLE);
+            return $response;
         }
-        return $this->redirectToRoute('app_project_status', ['id' => $student->getProject()->getId()], Response::HTTP_SEE_OTHER);
+
+        $student->setStudentGroup($studentGroup);
+        $studentRepository->save($student, true);
+        $response->setData([
+            'success' => true
+        ]);
+        return $response;
+        // return $this->redirectToRoute('app_project_status', ['id' => $student->getProject()->getId()], Response::HTTP_SEE_OTHER);
     }
 
 }

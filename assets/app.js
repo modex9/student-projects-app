@@ -17,6 +17,8 @@ Window.prototype.$ = $;
 
 $(function () {
     $('select').on('change', function() {
+        $(".alert-danger").text('');
+        $(".alert-danger").addClass('d-none');
         const studentId = $(this).val();
         const groupId = $(this).closest('table').data('group-id');
         fetch(`/student/${studentId}/assign/${groupId}`, {
@@ -25,6 +27,13 @@ $(function () {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-        });
+        }).then(response => response.json())
+          .then(function (json) {
+                if(json.error)
+                {
+                    $(".alert-danger").text(json.error);
+                    $(".alert-danger").removeClass('d-none');
+                }
+          });
     });
 });

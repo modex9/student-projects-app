@@ -6,15 +6,16 @@
     {% for error in app.flashes('error') %}
         {{ error }}
     {% endfor %}
-    <h3>Project status page</h3>
-
     <div id="project-content">
-        <div class="d-grid gap-1">
-            <div class="ms-3 p-1">Project: <b>{{ project.name }}</b></div>
-            <div class="ms-3 p-1">Number of groups: <b>{{ project.studentGroups|length }}</b></div>
-            <div class="ms-3 p-1">Students per group: <b>{{ project.maxStudentsPerGroup }}</b></div>
-        </div>
         <div class="w-50 container-fluid">
+            <div class="text-center">
+                <h3>Project status page</h3>
+                <div class="d-grid gap-1">
+                    <div class="ms-3 p-1">Project: <b>{{ project.name }}</b></div>
+                    <div class="ms-3 p-1">Number of groups: <b>{{ project.studentGroups|length }}</b></div>
+                    <div class="ms-3 p-1">Students per group: <b>{{ project.maxStudentsPerGroup }}</b></div>
+                </div>
+            </div>
             <h3>Students</h3>
             <table class="table table-dark table-hover text-center">
                 <thead>
@@ -50,11 +51,18 @@
         </div>
         <div class="w-50 container-fluid">
             <h3>Groups</h3>
+            <div class="alert alert-danger d-none" role="alert">
+            </div>
             <div class="row">
 
             {% set groupsCounter = 1 %}
             {% for group in projectGroups %}
                 <div class="col-6">
+                {% if group.students|length == project.maxStudentsPerGroup %}
+                    <div class="alert alert-dark" role="alert">
+                        Group #{{ groupsCounter }} is full.
+                    </div>
+                {% endif %}
                 <table class="table table-dark table-hover" data-group-id='{{group.id}}'>
                     <thead>
                         <tr>
@@ -69,22 +77,24 @@
                                     {{ student.fullname }} 
                                 </td>
                             </tr>
-                        {% set studentsCounter = studentsCounter + 1 %}
+                            {% set studentsCounter = studentsCounter + 1 %}
                         {% endfor %}
-                        {% for i in range(studentsCounter, project.maxStudentsPerGroup) %}
-                            <tr>
-                                <td class="text-center">
-                                    <select class="form-select">
-                                        <option selected="true" disabled="disabled">
-                                            Assign a Student
-                                        </option>
-                                        {% for student in studentsWithoutGroup %}
-                                            <option value="{{student.id}}">{{student.fullname}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        {% if studentsCounter <= project.maxStudentsPerGroup %}
+                            {% for i in range(studentsCounter, project.maxStudentsPerGroup) %}
+                                <tr>
+                                    <td class="text-center">
+                                        <select class="form-select">
+                                            <option selected="true" disabled="disabled">
+                                                Assign a Student
+                                            </option>
+                                            {% for student in studentsWithoutGroup %}
+                                                <option value="{{student.id}}">{{student.fullname}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
                     </tbody>
                 </table>
                 </div>
