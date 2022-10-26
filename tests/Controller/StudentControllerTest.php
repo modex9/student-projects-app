@@ -79,8 +79,8 @@ class StudentControllerTest extends WebTestCase
         self::assertSame($originalNumObjectsInRepository + 1, count($this->repository->findAll()));
 
         $this->client->request('GET', sprintf('/%s/status', $this->project->getId()));
-        $response = $this->client->getResponse();
-        file_put_contents('response.html', $response); 
+        // $response = $this->client->getResponse();
+        // file_put_contents('response.html', $response); 
         $this->client->submitForm('Delete');
 
         self::assertSame($originalNumObjectsInRepository, count($this->repository->findAll()));

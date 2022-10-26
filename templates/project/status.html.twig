@@ -1,8 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Project{% endblock %}
+{% block title %}Project status page{% endblock %}
 
 {% block body %}
+    {% for error in app.flashes('error') %}
+        {{ error }}
+    {% endfor %}
     <h3>Project status page</h3>
 
     <div id="project-content">
@@ -11,38 +14,86 @@
             <div class="ms-3 p-1">Number of groups: <b>{{ project.studentGroups|length }}</b></div>
             <div class="ms-3 p-1">Students per group: <b>{{ project.maxStudentsPerGroup }}</b></div>
         </div>
-        <h3>Students</h3>
-        <table class="table table-dark table-hover">
-            <thead>
-                <tr>
-                    <td>Student</td>
-                    <td>Group</td>
-                    <td>Actions</td>
-                <tr>
-                <tbody>
-                {% if project.students is not empty %}
-                    {% for student in project.students %}
-                        <tr>
-                            <td>{{student.fullname}}</td>
-                            <td>
-                            {% if groupPositions is not empty and student.studentGroup %}
-                                {{groupPositions[student.studentGroup.id]}}
-                            {% else %}
-                                -
-                            {% endif %}
-                            </td>
-                            <td>{{ include('student/_delete_form.html.twig', {'student': student, 'project_id': project.id} ) }}</td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
+        <div class="w-50 container-fluid">
+            <h3>Students</h3>
+            <table class="table table-dark table-hover text-center">
+                <thead>
                     <tr>
-                        <td colspan=3>No students.</td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </thead>
-        </table>
-        <a id='add-student-to-project' href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
+                        <td>Student</td>
+                        <td>Group</td>
+                        <td>Actions</td>
+                    <tr>
+                    <tbody class="table-light">
+                    {% if project.students is not empty %}
+                        {% for student in project.students %}
+                            <tr>
+                                <td >{{student.fullname}}</td>
+                                <td>
+                                {% if groupPositions is not empty and student.studentGroup %}
+                                    Group #{{groupPositions[student.studentGroup.id]}}
+                                {% else %}
+                                    -
+                                {% endif %}
+                                </td>
+                                <td>{{ include('student/_delete_form.html.twig', {'student': student, 'project_id': project.id} ) }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" colspan=3>No students.</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </thead>
+            </table>
+            <a id='add-student-to-project' href={{path('app_student_new', {'project': project.id})}}>Add new Student</a>
+        </div>
+        <div class="w-50 container-fluid">
+            <h3>Groups</h3>
+            <div class="row">
+
+            {% set groupsCounter = 1 %}
+            {% for group in projectGroups %}
+                <div class="col-6">
+                <table class="table table-dark table-hover" data-group-id='{{group.id}}'>
+                    <thead>
+                        <tr>
+                            <td class="text-center">Group #{{ groupsCounter }}</td>
+                        <tr>
+                    </thead>
+                    <tbody class="table-light">
+                        {% set studentsCounter = 1 %}
+                        {% for student in group.students %}
+                            <tr>
+                                <td class="text-center">
+                                    {{ student.fullname }} 
+                                </td>
+                            </tr>
+                        {% set studentsCounter = studentsCounter + 1 %}
+                        {% endfor %}
+                        {% for i in range(studentsCounter, project.maxStudentsPerGroup) %}
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-select">
+                                        <option selected="true" disabled="disabled">
+                                            Assign a Student
+                                        </option>
+                                        {% for student in studentsWithoutGroup %}
+                                            <option value="{{student.id}}">{{student.fullname}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            {% set groupsCounter = groupsCounter + 1 %}
+            {% endfor %}
+            </div>
+
+        </div>
+
     </div>
 
     <a href="{{ path('app_project_index') }}">back to list</a>

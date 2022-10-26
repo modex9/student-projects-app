@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Student;
 use App\Entity\Project;
+use App\Entity\StudentGroup;
 use App\Form\StudentType;
 use App\Repository\StudentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,6 +43,21 @@ class StudentController extends AbstractController
         }
 
         return $this->redirectToRoute('app_project_status', ['id' => $project->getId()], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/assign/{group}', name: 'app_student_assign', methods: ['POST', 'GET'])]
+    public function assignToProject(Request $request, Student $student, StudentGroup $studentGroup, StudentRepository $studentRepository): Response
+    {
+        if($student->getProject()->getId() != $studentGroup->getProject()->getId())
+        {
+            $this->addFlash('error', 'Trying to assign student to a group of a project, to which student is not assigned.');
+        }
+        else
+        {
+            $student->setStudentGroup($studentGroup);
+            $studentRepository->save($student, true);
+        }
+        return $this->redirectToRoute('app_project_status', ['id' => $student->getProject()->getId()], Response::HTTP_SEE_OTHER);
     }
 
 }

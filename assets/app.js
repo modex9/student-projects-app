@@ -10,3 +10,21 @@ import './styles/global.scss';
 
 // start the Stimulus application
 import './bootstrap';
+
+// this loads jquery, but does *not* set a global $ or jQuery variable
+const $ = require('jquery');
+Window.prototype.$ = $;
+
+$(function () {
+    $('select').on('change', function() {
+        const studentId = $(this).val();
+        const groupId = $(this).closest('table').data('group-id');
+        fetch(`/student/${studentId}/assign/${groupId}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+        });
+    });
+});

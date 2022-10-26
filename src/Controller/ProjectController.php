@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use App\Repository\StudentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,10 +44,15 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/status', name: 'app_project_status', methods: ['GET', 'POST'])]
-    public function status(Request $request, Project $project): Response
+    public function status(Request $request, StudentRepository $studentRepository, Project $project): Response
     {
-        $groupPositions = $project->getGroupPositions();
-        return $this->render('project/status.html.twig', ['project' => $project, 'groupPositions' => $groupPositions]);
+        $studentsWithoutGroup = $studentRepository->findByProject($project);
+        return $this->render('project/status.html.twig', [
+            'project' => $project,
+            'groupPositions' => $project->getGroupPositions(),
+            'projectGroups' => $project->getStudentGroups(),
+            'studentsWithoutGroup' => $studentsWithoutGroup
+        ]);
     }
 
     #[Route('/{id}', name: 'app_project_delete', methods: ['POST'])]
